@@ -1,11 +1,13 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/json/JSONModel"
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/export/library",
+	"sap/ui/export/Spreadsheet"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller,JSONModel) {
+    function (Controller,JSONModel,exportLibrary,Spreadsheet) {
         "use strict";
 
         return Controller.extend("com.parker.pricechangereport.controller.MainView", {
@@ -20,7 +22,7 @@ sap.ui.define([
                 var selDate2 = this.getOrignalTime(this.setLocalTimeZoneZone(dateTo));
                
                
-                this.oDataModel.read("/ZSCS_CDHDR(p_date='"+ selDate1.replaceAll("-","")+ "',p_date1='" + selDate2.replaceAll("-","") + "')/Set", {
+                this.oDataModel.read("/zscs_cdhdr(p_date='"+ selDate1.replaceAll("-","")+ "',p_date1='" + selDate2.replaceAll("-","") + "')/Set", {
                     success: function (oData) {
                         if(that.getOwnerComponent().getModel("ViewModel") != undefined){
                             that.getOwnerComponent().getModel("ViewModel").setData({"DataSet":[]})
@@ -80,6 +82,94 @@ sap.ui.define([
                  else {
                      return null;
                  }
+            },
+            createColumnConfig: function() {
+                return [
+                    {
+                        label: 'Purchasing Document',
+                        property: 'objectid'
+                       
+                    },
+                    {
+                        label: 'Purchasing Group',
+                        property: 'Pur_grp',
+                      
+                    },
+                    {
+                        label: 'Line Item',
+                        property: 'line_item',
+                      
+                    },
+                    {
+                        label: 'Material Number',
+                        property: 'material',
+                      
+                    },
+                    {
+                        label: 'Material Description',
+                        property: 'material_text',
+                      
+                    },
+                    {
+                        label: 'Vendor Number',
+                        property: 'vendor',
+                      
+                    },
+                    {
+                        label: 'Vendor Description',
+                        property: 'vendor_text',
+                      
+                    },
+                    {
+                        label: 'Old Value',
+                        property: 'old_netwr',
+                      
+                    },
+                    {
+                        label: 'New Value',
+                        property: 'new_netwr',
+                      
+                    },
+                    {
+                        label: 'Changed Value',
+                        property: 'change_value',
+                      
+                    },
+                    {
+                        label: 'Changed Percentage',
+                        property: 'percent_change_value',
+                      
+                    },
+                    {
+                        label: 'Changed Date',
+                        property: 'newdate',
+                      
+                    }
+                  ];
+            },
+            onPressExport: function() {
+                var aCols, oBinding, oSettings, oSheet, oTable;
+    
+                oTable = this.byId("reportTable");
+                oBinding = oTable.getBinding("items");
+                aCols = this.createColumnConfig();
+    
+                oSettings = {
+                    workbook: { columns: aCols,
+                        context: {
+                            sheetName: 'Exported Data'
+                        } },
+                    dataSource: oBinding,
+                    fileName: 'Exported File'
+                };
+    
+                oSheet = new Spreadsheet(oSettings);
+                oSheet.build()
+                    .then(function() {
+                        MessageToast.show('Report Downloaded');
+                    }).finally(function() {
+                        oSheet.destroy();
+                    });
             }
         });
     });

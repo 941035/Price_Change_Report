@@ -15,13 +15,20 @@
 				
 				</f:content>
 				</f:SimpleForm>
-			<Table items="{ path: 'ViewModel>/DataSet' }">
+			<Table id="reportTable" items="{ path: 'ViewModel>/DataSet' }">
+			<headerToolbar>
+			<OverflowToolbar id="otbSubheader">
+						<ToolbarSpacer/>
+						
+						<Button text="Export " type="Transparent" press="onPressExport"/>
+						</OverflowToolbar>
+			</headerToolbar>
 				<columns>
 					
-					<Column >
+					<Column width="6rem">
 						<Text text="Purchasing Document"/>
 					</Column>
-					<Column >
+					<Column width="6rem">
 						<Text text="Purchasing Group"/>
 					</Column>
 					<Column >
@@ -40,6 +47,12 @@
 						<Text text="New Value"/>
 					</Column>
 					<Column >
+						<Text text="Changed Value"/>
+					</Column>
+					<Column >
+						<Text text="Changed Percentage"/>
+					</Column>
+					<Column >
 						<Text text="Changed Date"/>
 					</Column>
 				</columns>
@@ -47,19 +60,21 @@
 					<ColumnListItem>
 						<cells>
 							<!-- <Text text="{ViewModel>OBJECTCLAS}"/> -->
-							<Text text="{ViewModel>OBJECTID}"/>
+							<Text text="{ViewModel>objectid}"/>
 							<Text text="{ViewModel>Pur_grp}"/>
 							<Text text="{ViewModel>line_item}"/>
 							<ObjectNumber number="{ViewModel>material}" unit="{ViewModel>material_text}"></ObjectNumber>
 							<ObjectNumber number="{ViewModel>vendor}" unit="{ViewModel>vendor_text}"></ObjectNumber>
 							<Text text="{ViewModel>old_netwr}"/>
 							<Text text="{ViewModel>new_netwr}"/>
+							<Text text="{ViewModel>change_value}"/>
+							<Text text="{ViewModel>percent_change_value}"/>
 							<Text text="{
 				path: 'ViewModel>newdate',
 				type: 'sap.ui.model.type.Date',
 				formatOptions: {
 					style: 'short',
-					pattern: 'dd/MM/yyyy'
+					pattern: 'MM/dd/yyyy'
 					
 				}
 			}"/>
